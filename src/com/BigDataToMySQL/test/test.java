@@ -55,8 +55,8 @@ public class test {
 						System.out.println("Loading No. " + (checkCount) + " record ... FAILED!");
 					}
 					count++;
-					if(count == 100){
-						System.out.println("Start　Insert from " + (checkCount-100) + " to " + checkCount + " !!!!!!!");
+					if(count == 1000){
+						System.out.println("Start　Insert from " + (checkCount-count) + " to " + checkCount + " !!!!!!!");
 						did.insertData(list, checkCount-100);
 						count = 0;
 					}
