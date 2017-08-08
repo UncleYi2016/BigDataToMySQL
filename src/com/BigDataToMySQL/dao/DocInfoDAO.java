@@ -20,10 +20,11 @@ public class DocInfoDAO extends BaseDAO{
 		super();
 	}
 	
-	public void insertData(List<DocInfo> list){
+	public void insertData(List<DocInfo> list, int checkCount){
 		System.out.println("Start inserting data ......");
 		System.out.println("Insert size: " + list.size());
 		for(DocInfo di : list){
+			checkCount++;
 			String sql = "INSERT INTO `" + tableName + "`" +
 					"(`" + id_column + "`,"  + 
 					"`"  + visit_no_column + "`," + 
@@ -39,14 +40,14 @@ public class DocInfoDAO extends BaseDAO{
 						di.getMedicineNo() + "','" +
 						di.getMedicineName() +
 					"')";
-			System.out.println(sql);
+//			System.out.println(sql);
 			try {
-				Statement stmt = conn.createStatement();
 				boolean success = stmt.execute(sql);
-				System.out.println(success);
+//				System.out.println("Insert No. " + checkCount + " ... OK!");
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println("Insert No. " + checkCount + " ... FAILED!");
+//				e.printStackTrace();
 			}
 			
 		}

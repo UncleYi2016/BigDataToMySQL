@@ -24,7 +24,7 @@ public class HosPerInfoDAO extends BaseDAO{
 	public HosPerInfoDAO(){
 		super();
 	}
-	public void insertData(List<HosPerInfo> list){
+	public void insertData(List<HosPerInfo> list,int checkCount){
 		System.out.println("Start inserting data ......");
 		System.out.println("Insert size: " + list.size());
 		for(HosPerInfo hpi : list){
