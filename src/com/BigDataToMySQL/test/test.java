@@ -18,20 +18,21 @@ public class test {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		DocInfoDAO did = new DocInfoDAO();
+		String path = args[0];
+//		DocInfoDAO did = new DocInfoDAO();
 		HosPerInfoDAO hpid = new HosPerInfoDAO();
 //		List<DocInfo> list = loadDocInfo();
 		List<HosPerInfo> list = null ;//loadHosPerInfo();		
 //		loadDocInfo();
-		loadHosPerInfo();
+		loadHosPerInfo(hpid,path);
 //		hpid.insertData(list);
-		loadDocInfo(did);
+//		loadDocInfo(did);
 //		did.insertData(list);
 //		did.selectData();
 	}
 	
-	public static void loadHosPerInfo(HosPerInfoDAO hpid){
-		File hos_per_info = new File("C://Users/Administrator/Desktop/code/hos_per_info_reduced.txt");
+	public static void loadHosPerInfo(HosPerInfoDAO hpid , String path){
+		File hos_per_info = new File(path);
 		InputStreamReader read = null;
 		BufferedReader bufferedReader = null;
 		if(hos_per_info.exists() && hos_per_info.isFile()){
@@ -43,28 +44,33 @@ public class test {
 						
 				}
 				String dataStr = null;  
-				List<HosPerInfo> list = new ArrayList<HosPerInfo>();
 				int count = 0;
 				int checkCount = 0;
-				while(true){
+				List<HosPerInfo> list = new ArrayList<HosPerInfo>();
+				while(checkCount < 92591){
 					try{
+						
 						checkCount++;
-						if((dataStr = bufferedReader.readLine().trim()) != null && checkCount < 18407973){
+
+						if((dataStr = bufferedReader.readLine().trim()) != null){
 							String[] datas = dataStr.split(",");
 							HosPerInfo hosData = new HosPerInfo(datas[0], datas[1], datas[2], datas[3], datas[4], datas[5], datas[6], datas[7], datas[8]);
 							list.add(hosData);
 						}else{
-							System.out.println("Start　Insert from " + (checkCount-count) + " to " + checkCount + "!!!!!!!");
-							hpid.insertData(list, checkCount-count);
+							System.out.println("Start　Insert from " + (checkCount - count) + " to " + checkCount + "!!!!!!!");
+							hpid.insertData(list, checkCount - count);
 							break;
 						}
-					} catch (Exception e){
+					}catch (Exception e){
+						hpid.insertData(list, checkCount - count);
 						System.out.println("Loading No. " + (checkCount) + " record ... FAILED!");
 					}
+					
 					count++;
-					if(count == 100){
-						System.out.println("Start　Insert from " + (checkCount-100) + " to " + checkCount + " !!!!!!!");
-						hpid.insertData(list, checkCount-100);
+					if(count == 1000){
+						System.out.println("Start　Insert from " + (checkCount - count) + " to " + checkCount + " !!!!!!!");
+						hpid.insertData(list, checkCount - count);
+						list.clear();
 						count = 0;
 					}
 				}
