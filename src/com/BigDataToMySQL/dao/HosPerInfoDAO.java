@@ -22,8 +22,8 @@ public class HosPerInfoDAO extends BaseDAO{
 	private String patient_gender_column = "patient_gender";
 	private String patient_age_column = "patient_age";
 		
-	public HosPerInfoDAO(){
-		super();
+	public HosPerInfoDAO(String dbhost , int dbport){
+		super(dbhost, dbport);
 	}
 	public void insertData(List<HosPerInfo> list,int checkCount){
 		System.out.println("Start inserting data ......");

@@ -16,8 +16,8 @@ public class DocInfoDAO extends BaseDAO{
 	private String medicine_no_column = "medicine_no";
 	private String medicine_name_column = "medicine_name";
 	
-	public DocInfoDAO(){
-		super();
+	public DocInfoDAO(String dbhost , int dbport){
+		super(dbhost, dbport);
 	}
 	
 	public void insertData(List<DocInfo> list, int checkCount){

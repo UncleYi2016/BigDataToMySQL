@@ -16,10 +16,15 @@ public class IllDAO extends BaseDAO{
 	private String ill_no_column = "ill_no";
 	private String ill_name_column = "ill_name";
 	
+	public IllDAO(String dbhost , int dbport){
+		super(dbhost, dbport);
+	}
+	
 	//number: 获取前n个确诊次数最多的疾病
-	public List<Ill> getIlls(int number, int countInfo){
+	public List<Ill> getIlls(int startNumber , int number, int countInfo){
 		List<Ill> illList = new ArrayList<Ill>();
 		Statement stmt = null;
+		
 		try {
 //			conn.setAutoCommit(false);  
 //			stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,  
@@ -31,7 +36,7 @@ public class IllDAO extends BaseDAO{
 		}
 		
 		ResultSet rs = null;
-		String sql = "select `ill_no`, `ill_name`, count(*) as `Count` from `hos_per_info` group by `ill_no` order by `Count` desc LIMIT 0, " + number;
+		String sql = "select `ill_no`, `ill_name`, count(*) as `Count` from `hos_per_info` group by `ill_no` order by `Count` desc LIMIT "+ startNumber +", " + number;
 		try {
 			System.out.println(sql);
 			rs = stmt.executeQuery(sql);
