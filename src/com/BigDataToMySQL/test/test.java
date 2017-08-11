@@ -28,7 +28,7 @@ public class test {
 		int dbport = 8636;  //数据库端口号
 		int count = 5;
 		int countInfo = 50;
-		int listSize = 2;	//每次取出的数目
+		int listSize = 5;	//每次取出的数目
 //		DocInfoDAO did = new DocInfoDAO();
 //		HosPerInfoDAO hpid = new HosPerInfoDAO();
 //		List<DocInfo> list = loadDocInfo();
@@ -44,8 +44,9 @@ public class test {
 			path = args[0];
 			count = Integer.parseInt(args[1]);	//设置要统计多少个疾病
 			countInfo = Integer.parseInt(args[2]); 	//设置统计一个疾病的多少条记录
-			dbpath = args[3];  //设置数据库地址
-			dbport = Integer.parseInt(args[4]);  //设置数据库端口号
+			listSize = Integer.parseInt(args[3]);  //设置每次查询数目
+			dbpath = args[4];  //设置数据库地址
+			dbport = Integer.parseInt(args[5]);  //设置数据库端口号
 		}catch(Exception e){
 			
 		}
