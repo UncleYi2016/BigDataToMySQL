@@ -16,10 +16,10 @@ public class BaseDAO {
 	
 	public BaseDAO(){
 
-//		host = "117.141.244.6";
-//		port = 8636;
-		host = "127.0.0.1";
-		port = 3306;
+		host = "117.141.244.6";
+		port = 8636;
+//		host = "127.0.0.1";
+//		port = 3306;
 		database = "xinnonghe";
 		user = "root";
 		password = "";

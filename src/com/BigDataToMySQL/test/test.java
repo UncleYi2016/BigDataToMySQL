@@ -18,6 +18,7 @@ import com.BigDataToMySQL.dao.IllDAO;
 import com.BigDataToMySQL.entity.Ill;
 import com.BigDataToMySQL.entity.Medicine;
 import com.BigDataToMySQL.entity.PatientArea;
+import com.google.gson.Gson;
 
 public class test {
 
@@ -53,9 +54,18 @@ public class test {
 //		did.selectData();
 		IllDAO illDAO = new IllDAO();
 		List<Ill> list = illDAO.getIlls(count, countInfo);
+		illToJson(list);
 //		List<Ill> list = illDAO.getIllNames(count);
-		saveIllToText(list, path);
+//		saveIllToText(list, path);
 		
+	}
+	
+	public static void illToJson(List<Ill> list){
+		Gson gson = new Gson();
+		for(Ill i : list){
+			String illStr = gson.toJson(i);
+			System.out.println(illStr);
+		}
 	}
 	
 	public static void saveIllToText(List<Ill> list, String path){
@@ -183,10 +193,6 @@ public class test {
 			}
 		}
 
-
-	public static void loadDocInfo(DocInfoDAO did){
-		File doc_info = new File("C://Users/vm/Desktop/documents/doc_info_utf8.txt");
-	}
 	//写入介绍文件
 	public static void saveIntro(File file, Ill i){
 		if(file.exists()){
@@ -207,6 +213,7 @@ public class test {
 			for(String age : i.ages){
 				bw.write("年龄" + ageArea + "~" + (ageArea+9) + "岁出现次数: " + age + "\r\n");
 				bw.flush();
+				ageArea+=10;
 			}
 			bw.write("男性发病次数: " + i.getManCount() + "\r\n");
 			bw.flush();
