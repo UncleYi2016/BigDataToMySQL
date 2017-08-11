@@ -13,15 +13,19 @@ import java.util.List;
 import com.BigDataToMySQL.dao.DocInfoDAO;
 import com.BigDataToMySQL.dao.HosPerInfoDAO;
 import com.BigDataToMySQL.entity.DocInfo;
+import com.BigDataToMySQL.entity.Gender;
 import com.BigDataToMySQL.entity.HosPerInfo;
 import com.BigDataToMySQL.dao.IllDAO;
 import com.BigDataToMySQL.entity.Ill;
+import com.BigDataToMySQL.entity.JsonIll;
 import com.BigDataToMySQL.entity.Medicine;
 import com.BigDataToMySQL.entity.PatientArea;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class test {
-
+	public static List<String> illNames = new ArrayList<String>();
+	public static List<String> illCounts = new ArrayList<String>();
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		String path = "./";
@@ -55,11 +59,13 @@ public class test {
 		IllDAO illDAO = new IllDAO(dbpath,dbport);
 		List<Ill> list = null; 
 		if(count - listSize >=0){
-			countIllList(list,illDAO,path,listSize,count,countInfo);
+			countJsonIllList(list,illDAO,path,listSize,count,countInfo);
 		}else{
 			listSize = count;
-			countIllList(list,illDAO,path,listSize,count,countInfo);
+			countJsonIllList(list,illDAO,path,listSize,count,countInfo);
 		}
+		saveJsonIllBriefIntro(illNames, path);
+		saveJsonIllBriefIntro(illCounts, path);
 		
 //		DocInfoDAO did = new DocInfoDAO();
 //		List<DocInfo> list = loadDocInfo();
@@ -69,12 +75,10 @@ public class test {
 //		did.selectData();
 	}
 	
-	public static void illToJson(List<Ill> list){
-		Gson gson = new Gson();
-		for(Ill i : list){
-			String illStr = gson.toJson(i);
-			System.out.println(illStr);
-		}
+	public static String illToJson(Object ji){
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String illStr = gson.toJson(ji);
+		return illStr;
 	}
 	
 	public static void countIllList(List<Ill> list,IllDAO illDAO,String path,int listSize,int count ,int countInfo){
@@ -84,62 +88,137 @@ public class test {
 				listSize = count - startNumber;
 			}
 			list = illDAO.getIlls(startNumber,listSize, countInfo);
-			saveIllToText(list, path,startNumber);
+//			saveIllToText(list, path,startNumber);
+			
+			saveIllToText(list, path, startNumber);
 		}
 	}
 	
+	public static void countJsonIllList(List<Ill> list,IllDAO illDAO,String path,int listSize,int count ,int countInfo){
+		int listCount = 0;
+		for (int startNumber=0;startNumber<count;startNumber += listSize){
+			if(count - startNumber < listSize){
+				listSize = count - startNumber;
+			}
+			list = illDAO.getIlls(startNumber,listSize, countInfo);
+//			saveIllToText(list, path,startNumber);
+			
+			List<JsonIll> jiList = new ArrayList<JsonIll>();
+			for(Ill ill : list){
+				if(ill.getIllName().equals(" ")){
+					illNames.add(ill.getIllNo());
+				}else{
+					illNames.add(ill.getIllNo() + "-" + ill.getIllName());
+				}
+				
+				illCounts.add(ill.getCount());
+				JsonIll ji = new JsonIll(ill.getIllNo(), ill.getIllName(), ill.getCount());
+				ji.genders.add(new Gender("男性", ill.getManCount()));
+				ji.genders.add(new Gender("女性", ill.getWomanCount()));
+				for(PatientArea pa : ill.patientArea){
+					ji.areaNos.add(pa.getAreaNo());
+					ji.areaAddrs.add(pa.getAreaAddr());
+					ji.areaCounts.add(pa.getCount());
+				}
+				for(String age : ill.ages){
+					ji.agesCount.add(age);
+				}
+				for(Medicine m : ill.medicine){
+					ji.medicineTypes.add(m.getMedicineType());
+					ji.medicineNos.add(m.getMedicineNo());
+					ji.medicineNames.add(m.getMedicineName());
+					ji.medicineCounts.add(m.getCount());
+				}
+				jiList.add(ji);
+				
+			}
+			
+			saveJsonIllToText(jiList, path, startNumber);
+			
+		}
+	}
 	public static void saveIllToText(List<Ill> list, String path,int j_colum){
 		int j = j_colum + 1;
 		for(Ill i: list){
 			
 			String dirName = "Ill_" + j + "_" +  i.getIllNo();
-//			String newDirName = "Ill_" + j + "_" + i.getIllNo();
 			String pathName = path + dirName + "/";
-//			String newPathName = path + "new_ills/" + newDirName + "/";
-
 			String introFileName = pathName + dirName + "_introduction.txt";
 			String dateTimeFileName = pathName + dirName + "_date_time.txt";
 			String medicineFileName = pathName + dirName + "_medicine.txt";
 			String patientAreaFileName = pathName + dirName + "_patientAreaFileName.txt";
-
-//			String newIntroFileName = pathName + newDirName + "_introduction.txt";
-//			String newDateTimeFileName = pathName + newDirName + "_date_time.txt";
-//			String newMedicineFileName = pathName + newDirName + "_medicine.txt";
-//			String newPatientAreaFileName = pathName + newDirName + "_patientAreaFileName.txt";
-
-			System.out.println(introFileName);
-//			System.out.println(newIntroFileName);
 			createDir(pathName);
-//			createFile(introFileName);
-//			createFile(dateTimeFileName);
-//			createFile(medicineFileName);
-//			createFile(patientAreaFileName);
 			File introFile = new File(introFileName);
 			File dateTimeFile = new File(dateTimeFileName);
 			File medicineFile = new File(medicineFileName);
 			File patientAreaFile = new File(patientAreaFileName);
-
-//			File newIntroFile = new File(newIntroFileName);
-//			File newDateTimeFile = new File(newDateTimeFileName);
-//			File newMedicineFile = new File(newMedicineFileName);
-//			File newPatientAreaFile = new File(newPatientAreaFileName);
-
-//			 renameFile(introFile, newIntroFile);
-//			 renameFile(dateTimeFile, newDateTimeFile);
-//			 renameFile(medicineFile, newMedicineFile);
-//			 renameFile(patientAreaFile, newPatientAreaFile);
-
 			saveIntro(introFile, i);
 			saveDateTime(dateTimeFile, i);
 			saveMedicine(medicineFile, i);
 			savePatientArea(patientAreaFile, i);
 			j++;
-			
 		}
 		System.out.println("FINISHED!");
 	}
 	
-
+	public static void saveJsonIllToText(List<JsonIll> list, String path, int j_colum){
+		int j = j_colum + 1;
+		for(JsonIll ji : list){
+			String dirName = "Ill_" + j + "_" + ji.illNo;
+			String pathName = path + dirName + "/";
+			String jsonFileName = pathName + dirName + ".json";
+			createDir(pathName);
+			File jsonFile = new File(jsonFileName);
+			saveJsonFile(jsonFile, ji);
+			j++;
+		}
+		System.out.println("FINISHED!");
+	}
+	
+	public static void saveJsonIllBriefIntro(List<String> list, String path){
+		String dirName = "Ill_Count";
+		String pathName = path + dirName + "/";
+		String jsonFileName = pathName + dirName + ".json";
+		createDir(pathName);
+		File jsonFile = new File(jsonFileName);
+		saveJsonFile(jsonFile, list);
+	}
+	
+	public static void saveJsonFile(File file, JsonIll ji){
+		if(file.exists()){
+			System.out.println("File SKIPPED!");
+		}
+		
+		try {
+			FileWriter fw = new FileWriter(file, true);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(illToJson(ji));
+			bw.flush();
+			bw.close();
+			fw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public static void saveJsonFile(File file, Object o){
+		if(file.exists()){
+			System.out.println("File SKIPPED!");
+		}
+		
+		try {
+			FileWriter fw = new FileWriter(file, true);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(illToJson(o));
+			bw.flush();
+			bw.close();
+			fw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public static void loadHosPerInfo(HosPerInfoDAO hpid , String path){
 		File hos_per_info = new File(path);
 		InputStreamReader read = null;
