@@ -24,8 +24,12 @@ public class test {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String path = args[0];
-
+		String path = "./";
+		String dbpath = "117.141.244.6";  //数据库地址
+		int dbport = 8636;  //数据库端口号
+		int count = 5;
+		int countInfo = 50;
+		int listSize = 5;	//每次取出的数目
 //		DocInfoDAO did = new DocInfoDAO();
 //		HosPerInfoDAO hpid = new HosPerInfoDAO();
 //		List<DocInfo> list = loadDocInfo();
@@ -35,16 +39,27 @@ public class test {
 //		hpid.insertData(list);
 //		loadDocInfo(did);
 
-		int count = 10;
-		int countInfo = 50;
 
+	
 		try{
+			path = args[0];
 			count = Integer.parseInt(args[1]);	//设置要统计多少个疾病
 			countInfo = Integer.parseInt(args[2]); 	//设置统计一个疾病的多少条记录
+			listSize = Integer.parseInt(args[3]);  //设置每次查询数目
+			dbpath = args[4];  //设置数据库地址
+			dbport = Integer.parseInt(args[5]);  //设置数据库端口号
 		}catch(Exception e){
 			
 		}
 		
+		IllDAO illDAO = new IllDAO(dbpath,dbport);
+		List<Ill> list = null; 
+		if(count - listSize >=0){
+			countIllList(list,illDAO,path,listSize,count,countInfo);
+		}else{
+			listSize = count;
+			countIllList(list,illDAO,path,listSize,count,countInfo);
+		}
 		
 //		DocInfoDAO did = new DocInfoDAO();
 //		List<DocInfo> list = loadDocInfo();
@@ -52,12 +67,6 @@ public class test {
 
 //		did.insertData(list);
 //		did.selectData();
-		IllDAO illDAO = new IllDAO();
-		List<Ill> list = illDAO.getIlls(count, countInfo);
-		illToJson(list);
-//		List<Ill> list = illDAO.getIllNames(count);
-//		saveIllToText(list, path);
-		
 	}
 	
 	public static void illToJson(List<Ill> list){
@@ -68,8 +77,19 @@ public class test {
 		}
 	}
 	
-	public static void saveIllToText(List<Ill> list, String path){
-		int j = 1;
+	public static void countIllList(List<Ill> list,IllDAO illDAO,String path,int listSize,int count ,int countInfo){
+		int listCount = 0;
+		for (int startNumber=0;startNumber<count;startNumber += listSize){
+			if(count - startNumber < listSize){
+				listSize = count - startNumber;
+			}
+			list = illDAO.getIlls(startNumber,listSize, countInfo);
+			saveIllToText(list, path,startNumber);
+		}
+	}
+	
+	public static void saveIllToText(List<Ill> list, String path,int j_colum){
+		int j = j_colum + 1;
 		for(Ill i: list){
 			
 			String dirName = "Ill_" + j + "_" +  i.getIllNo();
@@ -117,32 +137,6 @@ public class test {
 			
 		}
 		System.out.println("FINISHED!");
-	}
-	
-	
-	public static void renameFile(File file, File newFile){
-		try {
-			FileWriter fw = new FileWriter(newFile, true);
-			BufferedWriter bw = new BufferedWriter(fw);
-			InputStreamReader read = new InputStreamReader(new FileInputStream(file), "utf8");
-			BufferedReader bufferedReader = bufferedReader = new BufferedReader(read);
-
-			String dataStr = null;  
-				List<DocInfo> list = new ArrayList<DocInfo>();
-				int count = 0;
-				int checkCount = 0;
-				while(true){
-					checkCount++;
-					if((dataStr = bufferedReader.readLine()) != null){
-						bw.write(dataStr);
-						bw.flush();
-					}
-				}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 	}
 	
 
@@ -213,7 +207,7 @@ public class test {
 			for(String age : i.ages){
 				bw.write("年龄" + ageArea + "~" + (ageArea+9) + "岁出现次数: " + age + "\r\n");
 				bw.flush();
-				ageArea+=10;
+				ageArea += 10;
 			}
 			bw.write("男性发病次数: " + i.getManCount() + "\r\n");
 			bw.flush();

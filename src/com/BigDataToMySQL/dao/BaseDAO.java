@@ -13,13 +13,13 @@ public class BaseDAO {
 	public String database;
 	public String user;
 	public String password;
-	
-	public BaseDAO(){
+		
+	public BaseDAO(String dbhost , int dbport){
 
-		host = "117.141.244.6";
-		port = 8636;
-//		host = "127.0.0.1";
-//		port = 3306;
+//		host = "117.141.244.6";
+//		port = 8636;
+		host = dbhost;
+		port = dbport;
 		database = "xinnonghe";
 		user = "root";
 		password = "";
